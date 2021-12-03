@@ -5,7 +5,6 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
-void createTriangle();
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -59,53 +58,7 @@ int main()
         return -1;
     }
     
-    createTriangle();
-
-    // render loop
-    // -----------
-    while (!glfwWindowShouldClose(window))
-    {
-        // input
-        // -----
-        //processInput(window);
-
-        // render
-        // ------
-        //glClearColor(0.94f, 0.59f, 0.71f, 1.0f);
-        glClearColor(245.f/255, 214.f/255, 175.f/255, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    return EXIT_SUCCESS;
-}
-
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
-{
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
-}
-
-void createTriangle(){
+    //Initialisation of meshes and shaders
     //Defining vertices for the triangle
     float vertices[] = {
         -0.5f, -0.5f, 0.0f,
@@ -113,11 +66,25 @@ void createTriangle(){
          0.0f,  0.5f, 0.0f
     };
     
+    //Bind Vertex Array Object
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    
     //Storing the vertex data within memory on the graphics card, managed by a vertex buffer object named VBO
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
+    //Specifing to OpenGL how it should interpret the vertex data
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    
+    
+    
+    /* ---------------- Shaders -------------------*/
     
     //Creating vertex shader (actual code of the shader at the top of the file)
     unsigned int vertexShader;
@@ -174,4 +141,55 @@ void createTriangle(){
         std::cout << "SHADER::PROGRAM ::COMPILATION_SUCCEEDED\n" <<std::endl;
     }
     
-};
+    //Once we've linked the shaders into the program object, we no longer need them anymore
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    // render loop
+    // -----------
+    while (!glfwWindowShouldClose(window))
+    {
+        // input
+        // -----
+        //processInput(window);
+
+        // render
+        // ------
+        //glClearColor(0.94f, 0.59f, 0.71f, 1.0f);
+        glClearColor(245.f/255, 214.f/255, 175.f/255, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        // Drawing the object
+        glUseProgram(shaderProgram);
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // ------------------------------------------------------------------
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return EXIT_SUCCESS;
+}
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow *window)
+{
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+}
