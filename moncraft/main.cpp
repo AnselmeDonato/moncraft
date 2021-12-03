@@ -10,6 +10,8 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+int wireframeMode = 0;
+
 const char *vertexShaderSource = "#version 330 core \n"
 "layout (location = 0) in vec3 aPos; \n"
 "void main() \n"
@@ -187,8 +189,19 @@ int main()
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow *window)
 {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        if(wireframeMode){
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            wireframeMode = 0;
+        }
+        else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            wireframeMode = 1;
+        }
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
