@@ -114,10 +114,7 @@ int main()
     glEnableVertexAttribArray(1);
     
     //Shaders
-    unsigned int _shaderProgram = glCreateProgram();
-    loadShader(_shaderProgram, GL_VERTEX_SHADER, "/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/vertexShader.glsl");
-    loadShader(_shaderProgram, GL_FRAGMENT_SHADER, "/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/fragmentShader.glsl");
-    glLinkProgram(_shaderProgram);
+    Shader _shader("/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/vertexShader.glsl","/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/fragmentShader.glsl");
     
 
     // render loop
@@ -134,13 +131,7 @@ int main()
         // Drawing the object :
         
         //Activate the shader
-        glUseProgram(_shaderProgram);
-        
-        // update the uniform color
-        float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        int vertexColorLocation = glGetUniformLocation(_shaderProgram, "ourColor");
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+        _shader.use();
         
         //Rendering the triangles
         glBindVertexArray(VAO);
