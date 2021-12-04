@@ -77,10 +77,10 @@ int main()
     //Initialisation of meshes and shaders
     //Defining vertices for the triangle
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        -0.5f,  0.5f, 0.0f,
-         0.5f,  0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f
+        // Positions         //colors
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
     };
     
     unsigned int indices[] = {
@@ -106,8 +106,12 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
     //Specifing to OpenGL how it should interpret the vertex data
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    //color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
     
     //Shaders
     unsigned int _shaderProgram = glCreateProgram();
@@ -127,8 +131,18 @@ int main()
         glClearColor(245.f/255, 214.f/255, 175.f/255, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        // Drawing the object
+        // Drawing the object :
+        
+        //Activate the shader
         glUseProgram(_shaderProgram);
+        
+        // update the uniform color
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(_shaderProgram, "ourColor");
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+        
+        //Rendering the triangles
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

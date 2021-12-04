@@ -32,7 +32,4 @@ void loadShader(GLuint _program, GLenum _type, const std::string &_shaderFilenam
         glGetShaderInfoLog(_shader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::"<< _shaderFilename << "::COMPILATION_FAILED \n" << infoLog <<std::endl;
     }
-    else {
-        std::cout << "SHADER::" << _shaderFilename << "::COMPILATION_SUCCEEDED\n" <<std::endl;
-    }
 }
