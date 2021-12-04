@@ -1,10 +1,18 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <cstdlib>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <memory>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+//#include "shader.cpp"
+
+void loadShader(GLuint _program, GLenum type, const std::string &_shaderFilename);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -12,20 +20,61 @@ const unsigned int SCR_HEIGHT = 600;
 
 int wireframeMode = 0;
 
-const char *vertexShaderSource = "#version 330 core \n"
-"layout (location = 0) in vec3 aPos; \n"
-"void main() \n"
-"{\n"
-" gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
+// Loads the content of an ASCII file in a standard C++ string
+std::string file2String(const std::string &_filename) {
+    std::ifstream _inputFile(_filename.c_str());
+    std::stringstream _buffer;
+    _buffer << _inputFile.rdbuf();
+    return _buffer.str();
+}
 
-const char *fragmentShaderSource = "#version 330 core \n"
-"out vec4 FragColor; \n"
-"void main() \n"
-"{\n"
-" FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\0";
- 
+void loadShader(GLuint _program, GLenum _type, const std::string &_shaderFilename){
+    GLuint _shader = glCreateShader(_type);
+    std::string _shaderSourceString = file2String(_shaderFilename);
+    const GLchar *_shaderSource = (const GLchar*)_shaderSourceString.c_str();
+    glShaderSource(_shader, 1, &_shaderSource, NULL);
+    glCompileShader(_shader);
+    glAttachShader(_program, _shader);
+    glDeleteShader(_shader);
+    
+    //Checking if the compilation of the vertexShader was successful
+    int _success;
+    char infoLog[512];
+    glGetShaderiv(_shader, GL_COMPILE_STATUS, &_success);
+    if(!_success){
+        glGetShaderInfoLog(_shader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::"<< _shaderFilename << "::COMPILATION_FAILED \n" << infoLog <<std::endl;
+    }
+    else {
+        std::cout << "SHADER::" << _shaderFilename << "::COMPILATION_SUCCEEDED\n" <<std::endl;
+    }
+}
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+void processInput(GLFWwindow *window)
+{
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        if(wireframeMode){
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            wireframeMode = 0;
+        }
+        else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            wireframeMode = 1;
+        }
+    }
+}
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+}
 
 int main()
 {
@@ -96,6 +145,7 @@ int main()
     
     
     /* ---------------- Shaders -------------------*/
+    /*
     
     //Creating vertex shader (actual code of the shader at the top of the file)
     unsigned int vertexShader;
@@ -155,6 +205,12 @@ int main()
     //Once we've linked the shaders into the program object, we no longer need them anymore
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+     */
+    
+    unsigned int _shaderProgram = glCreateProgram();
+    loadShader(_shaderProgram, GL_VERTEX_SHADER, "/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/vertexShader.glsl");
+    loadShader(_shaderProgram, GL_FRAGMENT_SHADER, "/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/fragmentShader.glsl");
+    glLinkProgram(_shaderProgram);
     
     /* --------------------------------------------*/
 
@@ -170,7 +226,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
         
         // Drawing the object
-        glUseProgram(shaderProgram);
+        glUseProgram(_shaderProgram);
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -186,28 +242,4 @@ int main()
     return EXIT_SUCCESS;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-void processInput(GLFWwindow *window)
-{
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        if(wireframeMode){
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            wireframeMode = 0;
-        }
-        else {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            wireframeMode = 1;
-        }
-    }
-}
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
-}
