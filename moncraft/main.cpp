@@ -10,45 +10,13 @@
 #include <cmath>
 #include <memory>
 
-//#include "shader.cpp"
-
-void loadShader(GLuint _program, GLenum type, const std::string &_shaderFilename);
+#include "shader.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 int wireframeMode = 0;
-
-// Loads the content of an ASCII file in a standard C++ string
-std::string file2String(const std::string &_filename) {
-    std::ifstream _inputFile(_filename.c_str());
-    std::stringstream _buffer;
-    _buffer << _inputFile.rdbuf();
-    return _buffer.str();
-}
-
-void loadShader(GLuint _program, GLenum _type, const std::string &_shaderFilename){
-    GLuint _shader = glCreateShader(_type);
-    std::string _shaderSourceString = file2String(_shaderFilename);
-    const GLchar *_shaderSource = (const GLchar*)_shaderSourceString.c_str();
-    glShaderSource(_shader, 1, &_shaderSource, NULL);
-    glCompileShader(_shader);
-    glAttachShader(_program, _shader);
-    glDeleteShader(_shader);
-    
-    //Checking if the compilation of the vertexShader was successful
-    int _success;
-    char infoLog[512];
-    glGetShaderiv(_shader, GL_COMPILE_STATUS, &_success);
-    if(!_success){
-        glGetShaderInfoLog(_shader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::"<< _shaderFilename << "::COMPILATION_FAILED \n" << infoLog <<std::endl;
-    }
-    else {
-        std::cout << "SHADER::" << _shaderFilename << "::COMPILATION_SUCCEEDED\n" <<std::endl;
-    }
-}
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow *window)
@@ -141,78 +109,12 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
-    
-    
-    
-    /* ---------------- Shaders -------------------*/
-    /*
-    
-    //Creating vertex shader (actual code of the shader at the top of the file)
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    
-    //Checking if the compilation of the vertexShader was successful
-    int successVertex;
-    char infoLogVertex[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &successVertex);
-    if(!successVertex){
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLogVertex);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLogVertex <<std::endl;
-    }
-    else {
-        std::cout << "SHADER::VERTEX  ::COMPILATION_SUCCEEDED\n" <<std::endl;
-    }
-    
-    //Creating fragment shader (actual code of the shader at the top of the file)
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    
-    //Checking if the compilation of the fragmentShader was successful
-    int successFragment;
-    char infoLogFragment[512];
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &successFragment);
-    if(!successFragment){
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLogFragment);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLogFragment <<std::endl;
-    }
-    else {
-        std::cout << "SHADER::FRAGMENT::COMPILATION_SUCCEEDED\n" <<std::endl;
-    }
-    
-    //Creating the shader program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    
-    //Checking if the compilation of the shader program was successful
-    int successShader;
-    char infoLogShader[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &successShader);
-    if(!successShader){
-        glGetShaderInfoLog(shaderProgram, 512, NULL, infoLogShader);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLogFragment <<std::endl;
-    }
-    else {
-        std::cout << "SHADER::PROGRAM ::COMPILATION_SUCCEEDED\n" <<std::endl;
-    }
-    
-    //Once we've linked the shaders into the program object, we no longer need them anymore
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-     */
-    
+    //Shaders
     unsigned int _shaderProgram = glCreateProgram();
     loadShader(_shaderProgram, GL_VERTEX_SHADER, "/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/vertexShader.glsl");
     loadShader(_shaderProgram, GL_FRAGMENT_SHADER, "/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/fragmentShader.glsl");
     glLinkProgram(_shaderProgram);
     
-    /* --------------------------------------------*/
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -241,5 +143,3 @@ int main()
     glfwTerminate();
     return EXIT_SUCCESS;
 }
-
-
