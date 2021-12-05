@@ -94,7 +94,7 @@ int main()
         0, 3, 2,
         0, 2, 1
     };
-    
+        
     //Bind Vertex Array Object
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
@@ -173,7 +173,7 @@ int main()
     _shader.use();
     glUniform1i(glGetUniformLocation(_shader.ID, "texture1"), 0); //manually
     _shader.setInt("texture2", 1); //or with the shader class
-
+    
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -194,6 +194,11 @@ int main()
         
         //render container
         _shader.use();
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        unsigned int transformLoc = glGetUniformLocation(_shader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
