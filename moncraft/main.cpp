@@ -1,6 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -9,8 +13,10 @@
 #include <string>
 #include <cmath>
 #include <memory>
-
 #include "shader.hpp"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -77,15 +83,16 @@ int main()
     //Initialisation of meshes and shaders
     //Defining vertices for the triangle
     float vertices[] = {
-        // Positions         //colors
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-         0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+        // Positions        //colors          //texture coords
+         0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, //top right
+         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, //bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom left
+        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f //top left
     };
     
     unsigned int indices[] = {
-        0, 2, 1,
-        0, 2, 3
+        0, 3, 2,
+        0, 2, 1
     };
     
     //Bind Vertex Array Object
@@ -107,15 +114,65 @@ int main()
     
     //Specifing to OpenGL how it should interpret the vertex data
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    //color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
+    // texture attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    
+    // Textures
+    
+    unsigned int texture1, texture2;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    // set the texture wrapping/filtering options (on currently bound texture)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    // load and generate the texture
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/data/container.jpg", &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout << "Faild to load texture" <<std::endl;
+    }
+    stbi_image_free(data);
+    
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    // set the texture wrapping/filtering options (on currently bound texture)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    data = stbi_load("/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/data/awesomeface.png", &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout << "Faild to load texture" <<std::endl;
+    }
+    
+    stbi_image_free(data);
+    
     
     //Shaders
-    Shader _shader("/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/vertexShader.glsl","/Users/anselmedonato/desktop/Pas Telecom/OpenGL/moncraft/moncraft/fragmentShader.glsl");
+    Shader _shader("/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/vertexShader.glsl","/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/fragmentShader.glsl");
     
+    //Activate the shader
+    _shader.use();
+    glUniform1i(glGetUniformLocation(_shader.ID, "texture1"), 0); //manually
+    _shader.setInt("texture2", 1); //or with the shader class
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -124,18 +181,20 @@ int main()
         processInput(window);
 
         // render
-        //glClearColor(0.94f, 0.59f, 0.71f, 1.0f);
         glClearColor(245.f/255, 214.f/255, 175.f/255, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
         // Drawing the object :
         
-        //Activate the shader
-        _shader.use();
-        
         //Rendering the triangles
+        glActiveTexture(GL_TEXTURE0); //activate texture unit first
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1); //activate texture unit first
+        glBindTexture(GL_TEXTURE_2D, texture2);
+        
+        //render container
+        _shader.use();
         glBindVertexArray(VAO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
