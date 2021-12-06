@@ -196,6 +196,8 @@ int main()
     _shader.setInt("texture1", 0);
     _shader.setInt("texture2", 1);
     
+    //Z-buffer
+    glEnable(GL_DEPTH_TEST);
     
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -205,7 +207,7 @@ int main()
 
         // render
         glClearColor(245.f/255, 214.f/255, 175.f/255, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // Drawing the object :
         
@@ -235,7 +237,7 @@ int main()
         int projectionLoc =  glGetUniformLocation(_shader.ID, "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
         
-        //Render 
+        //Render
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
