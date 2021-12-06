@@ -22,15 +22,32 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+//Variables
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 3.0f);
+
+/*
+glm::yaw = -90.0f;
+glm::vec3 direction;
+direction.x = cos(glm::radians(yaw));
+direction.z = sin(glm::radians(yaw));
+ */
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+
 int wireframeMode = 0;
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow *window)
 {
+    //Commands
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    if(glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
         if(wireframeMode){
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             wireframeMode = 0;
@@ -40,6 +57,23 @@ void processInput(GLFWwindow *window)
             wireframeMode = 1;
         }
     }
+    
+    //Camera movement
+    const float cameraSpeed = 5.0f * deltaTime;
+    
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        cameraPos += cameraSpeed * cameraFront;
+    }
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -139,13 +173,6 @@ int main()
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
     
-    //Camera
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
     
     //Bind Vertex Array Object
     unsigned int VAO;
@@ -247,16 +274,15 @@ int main()
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         
         //View
-        const float radius = 10.0f;
-        float camX = sin(glfwGetTime()) * radius;
-        float camZ = cos(glfwGetTime()) * radius;
         glm::mat4 view;
-        view = glm::lookAt(glm::vec3(camX, 0.0f, camZ),
-                           glm::vec3(0.0f, 0.0f, 0.0f),
-                           glm::vec3(0.0f, 1.0f, 0.0f));
-        
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         int viewLoc = glGetUniformLocation(_shader.ID, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        
+        //Camera speed
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
         
         //Projection
         glm::mat4 projection;
