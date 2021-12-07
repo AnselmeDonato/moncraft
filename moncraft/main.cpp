@@ -17,12 +17,16 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
+/*
+#define CAMERA_IMPLEMENTATION
+#include "Camera.h"
+*/
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 //Variables
+
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -59,6 +63,7 @@ void processInput(GLFWwindow *window)
     }
     
     //Camera movement
+    
     const float cameraSpeed = 5.0f * deltaTime;
     
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -73,6 +78,7 @@ void processInput(GLFWwindow *window)
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     }
+     
     
 }
 
@@ -98,20 +104,19 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     pitch += yoffset;
 
     // make sure that when pitch is out of bounds, screen doesn't get flipped
-    /*
     if (pitch > 89.0f) {
         pitch = 89.0f;
     }
     if (pitch < -89.0f) {
         pitch = -89.0f;
     }
-     */
         
     glm::vec3 front;
     front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     front.y = sin(glm::radians(pitch));
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(front);
+    
 }
 
 
@@ -290,6 +295,9 @@ int main()
     //Z-buffer
     glEnable(GL_DEPTH_TEST);
     
+    //Camera
+    //Camera camera = Camera();
+    
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -313,14 +321,12 @@ int main()
         //Model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 0.0f, 0.0f));
-        int modelLoc = glGetUniformLocation(_shader.ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        _shader.setMatrix4fv("model", glm::value_ptr(model));
         
         //View
         glm::mat4 view;
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        int viewLoc = glGetUniformLocation(_shader.ID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        _shader.setMatrix4fv("view", glm::value_ptr(view));
         
         //Camera speed
         float currentFrame = glfwGetTime();
@@ -330,8 +336,7 @@ int main()
         //Projection
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-        int projectionLoc =  glGetUniformLocation(_shader.ID, "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        _shader.setMatrix4fv("projection", glm::value_ptr(projection));
         
         //Render
         glBindVertexArray(VAO);
@@ -341,8 +346,7 @@ int main()
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            int modelLoc = glGetUniformLocation(_shader.ID, "model");
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+            _shader.setMatrix4fv("model", glm::value_ptr(model));
             
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
