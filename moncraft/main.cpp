@@ -303,19 +303,25 @@ int main()
     {
         // input
         processInput(window);
-
-        // render
+        
+        //Time since the last frame
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        
+        // render background
         glClearColor(245.f/255, 214.f/255, 175.f/255, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // Drawing the object :
         
-        //Rendering the triangles
+        //Textures
         glActiveTexture(GL_TEXTURE0); //activate texture unit first
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1); //activate texture unit first
         glBindTexture(GL_TEXTURE_2D, texture2);
         
+        //Shader
         _shader.use();
         
         //Model
@@ -324,18 +330,11 @@ int main()
         _shader.setMatrix4fv("model", glm::value_ptr(model));
         
         //View
-        glm::mat4 view;
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         _shader.setMatrix4fv("view", glm::value_ptr(view));
         
-        //Camera speed
-        float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-        
         //Projection
-        glm::mat4 projection;
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
         _shader.setMatrix4fv("projection", glm::value_ptr(projection));
         
         //Render
@@ -348,7 +347,6 @@ int main()
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             _shader.setMatrix4fv("model", glm::value_ptr(model));
             
-
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
