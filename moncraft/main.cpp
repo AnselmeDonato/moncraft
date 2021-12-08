@@ -84,11 +84,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow* window, int _width, int _height)
 {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, _width, _height);
 }
 
 int main()
@@ -129,46 +129,46 @@ int main()
     //Defining vertices for the triangle
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.1f, 0.0f,
+         0.5f,  0.5f, -0.5f,  0.1f, 0.1f,
+         0.5f,  0.5f, -0.5f,  0.1f, 0.1f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 0.1f,
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.1f, 0.0f,
+         0.5f,  0.5f,  0.5f,  0.1f, 0.1f,
+         0.5f,  0.5f,  0.5f,  0.1f, 0.1f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.1f,
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.1f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.1f, 0.1f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.1f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.1f,
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.1f, 0.0f,
 
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  0.1f, 0.0f,
+         0.5f,  0.5f, -0.5f,  0.1f, 0.1f,
+         0.5f, -0.5f, -0.5f,  0.0f, 0.1f,
+         0.5f, -0.5f, -0.5f,  0.0f, 0.1f,
          0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  0.1f, 0.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.1f,
+         0.5f, -0.5f, -0.5f,  0.1f, 0.1f,
+         0.5f, -0.5f,  0.5f,  0.1f, 0.0f,
+         0.5f, -0.5f,  0.5f,  0.1f, 0.0f,
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.1f,
 
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 0.1f,
+         0.5f,  0.5f, -0.5f,  0.1f, 0.1f,
+         0.5f,  0.5f,  0.5f,  0.1f, 0.0f,
+         0.5f,  0.5f,  0.5f,  0.1f, 0.0f,
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+        -0.5f,  0.5f, -0.5f,  0.0f, 0.1f
     };
     
     glm::vec3 cubePositions[] = {
@@ -206,46 +206,28 @@ int main()
     
     // Textures
     
-    unsigned int texture1, texture2;
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
     // set the texture wrapping/filtering options (on currently bound texture)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     
     // load and generate the texture
     int width, height, nrChannels;
-    unsigned char *data = stbi_load("/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/data/container.jpg", &width, &height, &nrChannels, 0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else {
-        std::cout << "Faild to load texture" <<std::endl;
-    }
-    stbi_image_free(data);
-    
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    // set the texture wrapping/filtering options (on currently bound texture)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
-    data = stbi_load("/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/data/awesomeface.png", &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load("/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/data/textureMap.png", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
+        std::cout << width << " "<< height << " " << nrChannels << std::endl;
     }
     else {
         std::cout << "Faild to load texture" <<std::endl;
     }
-    
     stbi_image_free(data);
-    
+
     //Shaders
     Shader _shader("/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/vertexShader.glsl","/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/fragmentShader.glsl");
     
@@ -276,9 +258,7 @@ int main()
         
         //Textures
         glActiveTexture(GL_TEXTURE0); //activate texture unit first
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1); //activate texture unit first
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        glBindTexture(GL_TEXTURE_2D, texture);
         
         //Shader
         _shader.use();
