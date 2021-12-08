@@ -67,6 +67,12 @@ void processInput(GLFWwindow *window)
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera.processKey(RIGHT, deltaTime);
     }
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        camera.processKey(UP, deltaTime);
+    }
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        camera.processKey(DOWN, deltaTime);
+    }
     
 }
 

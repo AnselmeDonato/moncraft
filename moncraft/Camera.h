@@ -19,7 +19,9 @@ enum Camera_Movement {
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN
 };
 
 //Defalut values
@@ -55,18 +57,27 @@ public:
         
     void processKey(Camera_Movement direction, float deltaTime){
         float _speed = SPEED * deltaTime;
+        glm::vec3 planar_front;
+        planar_front.x = m_front.x;
+        planar_front.z = m_front.z;
         
         if(direction == FORWARD) {
-            m_position += _speed * m_front;
+            m_position += _speed * glm::normalize(planar_front);
         }
         if(direction == LEFT) {
-            m_position -= glm::normalize(glm::cross(m_front, m_up)) * _speed;
+            m_position -= glm::normalize(glm::cross(planar_front, m_up)) * _speed;
         }
         if(direction == BACKWARD) {
-            m_position -= _speed * m_front;
+            m_position -= _speed * glm::normalize(planar_front);
         }
         if(direction == RIGHT) {
-            m_position += glm::normalize(glm::cross(m_front, m_up)) * _speed;
+            m_position += glm::normalize(glm::cross(planar_front, m_up)) * _speed;
+        }
+        if(direction == UP) {
+            m_position += _speed * glm::vec3(0.0f, 1.0f, 0.0f);
+        }
+        if(direction == DOWN) {
+            m_position -= _speed * glm::vec3(0.0f, 1.0f, 0.0f);
         }
     }
     
