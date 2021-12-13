@@ -184,7 +184,6 @@ int main()
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
     
-    
     //Bind Vertex Array Object
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
@@ -204,6 +203,20 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
     
+    //Lights data
+    
+    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
+    unsigned int lightVAO;
+    glGenVertexArrays(1, &lightVAO);
+    glBindVertexArray(lightVAO);
+    // We only need to bind to the VBO, the container's VBO's data
+    //already contains the data
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // set the vertex attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
     // Textures
     
     unsigned int texture;
@@ -221,7 +234,6 @@ int main()
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-        std::cout << width << " "<< height << " " << nrChannels << std::endl;
     }
     else {
         std::cout << "Faild to load texture" <<std::endl;
@@ -231,13 +243,14 @@ int main()
     //Shaders
     Shader _shader("/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/vertexShader.glsl","/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/fragmentShader.glsl");
     
+    Shader light_shader("/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/lightVertexShader.glsl","/Users/anselmedonato/Desktop/Pas Telecom/OpenGL/moncraft/moncraft/lightFragmentShader.glsl");
+    
     //Activate the shader
     _shader.use();
-    _shader.setInt("texture1", 0);
-    _shader.setInt("texture2", 1);
-    
+     
     //Z-buffer
     glEnable(GL_DEPTH_TEST);
+
     
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -262,6 +275,8 @@ int main()
         
         //Shader
         _shader.use();
+        _shader.setVec3f("objectColor", 1.0f, 0.5f, 0.31f);
+        _shader.setVec3f("lightColor", 1.0f, 1.0f, 1.0f);
         
         //Model
         glm::mat4 model = glm::mat4(1.0f);
@@ -278,6 +293,7 @@ int main()
         _shader.setMatrix4fv("projection", glm::value_ptr(projection));
         
         //Render
+        
         glBindVertexArray(VAO);
         for(unsigned int i = 0; i < 10; i++)
         {
@@ -289,7 +305,18 @@ int main()
             
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-
+        
+        light_shader.use();
+        light_shader.setMatrix4fv("view", glm::value_ptr(view));
+        light_shader.setMatrix4fv("projection", glm::value_ptr(projection));
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+        light_shader.setMatrix4fv("model", glm::value_ptr(model));
+        
+        glBindVertexArray(lightVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
