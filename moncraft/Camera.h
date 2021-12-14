@@ -120,6 +120,10 @@ public:
         return glm::lookAt(m_position, m_position + m_front, m_up);
     }
     
+    glm::vec3 getPosition() {
+        return m_position;
+    }
+    
 
 };
 #endif /* Camera_h */

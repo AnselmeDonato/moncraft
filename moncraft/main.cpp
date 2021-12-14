@@ -289,9 +289,9 @@ int main()
         //Render
         
         //Light source :
-        //glm::vec3 lightPos(1.2f, -1.0f, 2.0f);
-        float _t = (float) glfwGetTime();
-        glm::vec3 lightPos(5*std::cos((2*PI*_t) / 5), 5*std::sin((2*PI*_t) / 5), 2.0f);
+        glm::vec3 lightPos(1.2f, -1.0f, 2.0f);
+        //float _t = (float) glfwGetTime();
+        //glm::vec3 lightPos(5*std::cos((2*PI*_t) / 5), 5*std::sin((2*PI*_t) / 5), 2.0f);
         light_shader.use();
         light_shader.setVec3f("lightPos", glm::value_ptr(lightPos));
         light_shader.setMatrix4fv("view", glm::value_ptr(view));
@@ -312,6 +312,7 @@ int main()
         _shader.setVec3f("objectColor", 1.0f, 0.5f, 0.31f);
         _shader.setVec3f("lightColor", 1.0f, 1.0f, 1.0f);
         _shader.setVec3f("lightPos", glm::value_ptr(lightPos));
+        _shader.setVec3f("viewPos", glm::value_ptr(camera.getPosition()));
 
         //Other elements
         
